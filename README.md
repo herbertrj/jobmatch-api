@@ -1,15 +1,9 @@
 # JobMatch API
 
-JobMatch API e um projeto de portfolio backend construido com FastAPI.  
-O objetivo e simular uma API de mercado para gerenciar candidatos e vagas, e depois oferecer recomendacoes de compatibilidade.
+Projeto pessoal para praticar FastAPI com um tema de recrutamento.
+Aqui eu estou construindo uma API para cadastrar candidatos e vagas, e depois adicionar uma logica de compatibilidade entre eles.
 
-## Objetivos do Projeto
-
-- Demonstrar habilidades praticas de backend para vagas de estagio/junior.
-- Aplicar fundamentos de boas APIs (validacao, versionamento e testes).
-- Evoluir o projeto de forma incremental, com commits claros e realistas.
-
-## Stack Tecnologica
+## Tecnologias
 
 - Python
 - FastAPI
@@ -17,20 +11,20 @@ O objetivo e simular uma API de mercado para gerenciar candidatos e vagas, e dep
 - Pytest
 - Ruff + Black
 
-## Escopo Atual (MVP Dia 1)
+## O que ja esta feito
 
 - Endpoint de health check.
 - Endpoint de versao.
 - Criacao e listagem de candidatos.
 - Criacao e listagem de vagas.
-- Armazenamento em memoria para iteracao rapida.
+- Armazenamento em memoria (por enquanto).
 
-## Proximos Passos Planejados
+## Proximos passos
 
 - Adicionar score de compatibilidade entre candidatos e vagas.
 - Adicionar persistencia com banco de dados relacional.
 - Adicionar autenticacao e autorizacao.
-- Adicionar pipeline de CI e cobertura de testes.
+- Melhorar a cobertura de testes.
 
 ## Como Rodar Localmente
 
