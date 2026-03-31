@@ -49,5 +49,5 @@ uvicorn app.main:app --reload
 ## Como Rodar os Testes
 
 ```bash
-pytest
+venv\Scripts\python -m pytest
 ```

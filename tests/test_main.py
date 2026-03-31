@@ -1,4 +1,10 @@
+import sys
+from pathlib import Path
+
 from fastapi.testclient import TestClient
+
+# Garante que a raiz do projeto esteja no path durante os testes.
+sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from app.api.routes.candidates import candidates_db
 from app.api.routes.jobs import jobs_db
