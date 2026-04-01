@@ -1,7 +1,9 @@
 # JobMatch API
 
 Projeto pessoal para praticar FastAPI com um tema de recrutamento.
-Aqui eu estou construindo uma API para cadastrar candidatos e vagas, com uma logica simples de compatibilidade entre eles.
+A ideia e simular um fluxo basico de selecao: cadastrar candidatos, cadastrar vagas e calcular uma compatibilidade inicial entre os dois lados.
+Neste momento a API funciona em memoria, com foco em evolucao por etapas e commits pequenos.
+Nos proximos dias, o projeto vai receber persistencia em banco e melhorias de regras de matching.
 
 ## Tecnologias
 
