@@ -1,9 +1,9 @@
 # JobMatch API
 
 Projeto pessoal para praticar FastAPI com um tema de recrutamento.
-A ideia e simular um fluxo basico de selecao: cadastrar candidatos, cadastrar vagas e calcular uma compatibilidade inicial entre os dois lados.
-Neste momento a API funciona em memoria, com foco em evolucao por etapas e commits pequenos.
-Nos proximos dias, o projeto vai receber persistencia em banco e melhorias de regras de matching.
+A ideia e simular um fluxo de selecao completo: cadastrar candidatos, cadastrar vagas e ranquear os candidatos mais aderentes para cada vaga.
+O foco do projeto e mostrar uma API backend organizada, com validacao de dados, regras de compatibilidade e testes automatizados.
+Hoje a implementacao usa armazenamento em memoria para manter o projeto simples de executar e facil de evoluir.
 
 ## Tecnologias
 
@@ -13,20 +13,14 @@ Nos proximos dias, o projeto vai receber persistencia em banco e melhorias de re
 - Pytest
 - Ruff + Black
 
-## O que ja esta feito
+## O que o projeto faz
 
 - Endpoint de health check.
 - Endpoint de versao.
 - Criacao e listagem de candidatos.
 - Criacao e listagem de vagas.
-- Ranking de candidatos por vaga com score simples.
-- Armazenamento em memoria (por enquanto).
-
-## Proximos passos
-
-- Adicionar persistencia com banco de dados relacional.
-- Adicionar autenticacao e autorizacao.
-- Melhorar a cobertura de testes.
+- Ranking de candidatos por vaga com score de compatibilidade (skills + experiencia).
+- Retorno detalhado do matching: pontuacao, skills atendidas, skills faltantes e status de experiencia.
 
 ## Como Rodar Localmente
 
