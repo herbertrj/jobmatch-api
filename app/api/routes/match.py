@@ -1,7 +1,8 @@
 from fastapi import APIRouter, HTTPException, status
 
-from app.api.routes.candidates import candidates_db
-from app.api.routes.jobs import jobs_db
+from app.db.session import SessionLocal
+from app.models.candidate import Candidate
+from app.models.job import Job
 from app.schemas.candidate import CandidateResponse
 from app.schemas.job import JobResponse
 from app.schemas.match import CandidateMatchResult
@@ -39,12 +40,35 @@ def calculate_score(candidate: CandidateResponse, job: JobResponse) -> Candidate
     description="Retorna candidatos ordenados por score de compatibilidade para uma vaga.",
 )
 def match_candidates_for_job(job_id: int) -> list[CandidateMatchResult]:
-    selected_job = next((job for job in jobs_db if job.id == job_id), None)
-    if selected_job is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Vaga nao encontrada.",
+    with SessionLocal() as db:
+        selected_job = db.query(Job).filter(Job.id == job_id).first()
+        if selected_job is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Vaga nao encontrada.",
+            )
+
+        job_data = JobResponse(
+            id=selected_job.id,
+            title=selected_job.title,
+            company=selected_job.company,
+            minimum_experience=selected_job.minimum_experience,
+            required_skills=[
+                skill for skill in selected_job.required_skills_text.split(",") if skill
+            ],
         )
 
-    results = [calculate_score(candidate, selected_job) for candidate in candidates_db]
-    return sorted(results, key=lambda item: item.score, reverse=True)
+        candidates = db.query(Candidate).all()
+        candidate_data = [
+            CandidateResponse(
+                id=candidate.id,
+                full_name=candidate.full_name,
+                email=candidate.email,
+                years_of_experience=candidate.years_of_experience,
+                skills=[skill for skill in candidate.skills_text.split(",") if skill],
+            )
+            for candidate in candidates
+        ]
+
+        results = [calculate_score(candidate, job_data) for candidate in candidate_data]
+        return sorted(results, key=lambda item: item.score, reverse=True)

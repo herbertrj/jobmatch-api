@@ -6,16 +6,19 @@ from fastapi.testclient import TestClient
 # Garante que a raiz do projeto esteja no path durante os testes.
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from app.api.routes.candidates import candidates_db
-from app.api.routes.jobs import jobs_db
+from app.db.session import SessionLocal
+from app.models.candidate import Candidate
+from app.models.job import Job
 from app.main import app
 
 client = TestClient(app)
 
 
-def reset_in_memory_data() -> None:
-    candidates_db.clear()
-    jobs_db.clear()
+def reset_database_data() -> None:
+    with SessionLocal() as db:
+        db.query(Candidate).delete()
+        db.query(Job).delete()
+        db.commit()
 
 
 def test_health_check() -> None:
@@ -25,10 +28,10 @@ def test_health_check() -> None:
 
 
 def test_create_candidate() -> None:
-    reset_in_memory_data()
+    reset_database_data()
 
     payload = {
-        "full_name": "Herbert Silva",
+        "full_name": "Herbert Albuquerque",
         "email": "herbert@example.com",
         "years_of_experience": 1,
         "skills": ["python", "fastapi"],
@@ -42,7 +45,7 @@ def test_create_candidate() -> None:
 
 
 def test_match_candidates_for_job() -> None:
-    reset_in_memory_data()
+    reset_database_data()
 
     client.post(
         "/api/v1/candidates",

@@ -3,13 +3,15 @@
 Projeto pessoal para praticar FastAPI com um tema de recrutamento.
 A ideia e simular um fluxo de selecao completo: cadastrar candidatos, cadastrar vagas e ranquear os candidatos mais aderentes para cada vaga.
 O foco do projeto e mostrar uma API backend organizada, com validacao de dados, regras de compatibilidade e testes automatizados.
-Hoje a implementacao usa armazenamento em memoria para manter o projeto simples de executar e facil de evoluir.
+Hoje a implementacao usa SQLite para persistir dados localmente de forma simples.
 
 ## Tecnologias
 
 - Python
 - FastAPI
 - Pydantic
+- SQLAlchemy
+- SQLite
 - Pytest
 - Ruff + Black
 

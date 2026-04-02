@@ -1,10 +1,10 @@
 from fastapi import APIRouter, status
 
+from app.db.session import SessionLocal
+from app.models.candidate import Candidate
 from app.schemas.candidate import CandidateCreate, CandidateResponse
 
 router = APIRouter(prefix="/candidates", tags=["Candidatos"])
-
-candidates_db: list[CandidateResponse] = []
 
 
 @router.post(
@@ -15,10 +15,26 @@ candidates_db: list[CandidateResponse] = []
     description="Cria um novo candidato com dados basicos e lista de habilidades.",
 )
 def create_candidate(payload: CandidateCreate) -> CandidateResponse:
-    # Armazenamento em memoria para o primeiro dia de projeto.
-    candidate = CandidateResponse(id=len(candidates_db) + 1, **payload.model_dump())
-    candidates_db.append(candidate)
-    return candidate
+    # Persistencia simples em SQLite para manter o projeto leve.
+    skills_text = ",".join(payload.skills)
+    with SessionLocal() as db:
+        candidate = Candidate(
+            full_name=payload.full_name,
+            email=payload.email,
+            years_of_experience=payload.years_of_experience,
+            skills_text=skills_text,
+        )
+        db.add(candidate)
+        db.commit()
+        db.refresh(candidate)
+
+        return CandidateResponse(
+            id=candidate.id,
+            full_name=candidate.full_name,
+            email=candidate.email,
+            years_of_experience=candidate.years_of_experience,
+            skills=[skill for skill in candidate.skills_text.split(",") if skill],
+        )
 
 
 @router.get(
@@ -28,4 +44,15 @@ def create_candidate(payload: CandidateCreate) -> CandidateResponse:
     description="Retorna todos os candidatos cadastrados ate o momento.",
 )
 def list_candidates() -> list[CandidateResponse]:
-    return candidates_db
+    with SessionLocal() as db:
+        candidates = db.query(Candidate).all()
+        return [
+            CandidateResponse(
+                id=candidate.id,
+                full_name=candidate.full_name,
+                email=candidate.email,
+                years_of_experience=candidate.years_of_experience,
+                skills=[skill for skill in candidate.skills_text.split(",") if skill],
+            )
+            for candidate in candidates
+        ]
