@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Query, status
 
 from app.db.session import SessionLocal
 from app.models.candidate import Candidate
@@ -56,3 +56,46 @@ def list_candidates() -> list[CandidateResponse]:
             )
             for candidate in candidates
         ]
+
+
+@router.get(
+    "/search",
+    response_model=list[CandidateResponse],
+    summary="Buscar candidatos com filtros",
+    description="Filtra candidatos por habilidade e experiencia minima.",
+)
+def search_candidates(
+    skill: str | None = Query(default=None),
+    min_experience: int | None = Query(default=None, ge=0),
+) -> list[CandidateResponse]:
+    with SessionLocal() as db:
+        candidates = db.query(Candidate).all()
+        results: list[CandidateResponse] = []
+
+        for candidate in candidates:
+            candidate_skills = [
+                item.strip().lower()
+                for item in candidate.skills_text.split(",")
+                if item.strip()
+            ]
+
+            if skill and skill.lower() not in candidate_skills:
+                continue
+
+            if (
+                min_experience is not None
+                and candidate.years_of_experience < min_experience
+            ):
+                continue
+
+            results.append(
+                CandidateResponse(
+                    id=candidate.id,
+                    full_name=candidate.full_name,
+                    email=candidate.email,
+                    years_of_experience=candidate.years_of_experience,
+                    skills=[item for item in candidate.skills_text.split(",") if item],
+                )
+            )
+
+        return results

@@ -20,6 +20,7 @@ Hoje a implementacao usa SQLite para persistir dados localmente de forma simples
 - Endpoint de health check.
 - Endpoint de versao.
 - Criacao e listagem de candidatos.
+- Busca de candidatos com filtros por skill e experiencia minima.
 - Criacao e listagem de vagas.
 - Ranking de candidatos por vaga com score de compatibilidade (skills + experiencia).
 - Retorno detalhado do matching: pontuacao, skills atendidas, skills faltantes e status de experiencia.

@@ -83,3 +83,33 @@ def test_match_candidates_for_job() -> None:
     assert len(body) == 2
     assert body[0]["candidate_name"] == "Ana Souza"
     assert body[0]["score"] >= body[1]["score"]
+
+
+def test_search_candidates_with_filters() -> None:
+    reset_database_data()
+
+    client.post(
+        "/api/v1/candidates",
+        json={
+            "full_name": "Carla Dev",
+            "email": "carla@example.com",
+            "years_of_experience": 3,
+            "skills": ["python", "sql"],
+        },
+    )
+    client.post(
+        "/api/v1/candidates",
+        json={
+            "full_name": "Diego Jr",
+            "email": "diego@example.com",
+            "years_of_experience": 1,
+            "skills": ["javascript"],
+        },
+    )
+
+    response = client.get("/api/v1/candidates/search?skill=python&min_experience=2")
+    body = response.json()
+
+    assert response.status_code == 200
+    assert len(body) == 1
+    assert body[0]["full_name"] == "Carla Dev"
