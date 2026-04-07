@@ -113,3 +113,45 @@ def test_search_candidates_with_filters() -> None:
     assert response.status_code == 200
     assert len(body) == 1
     assert body[0]["full_name"] == "Carla Dev"
+
+
+def test_match_jobs_for_candidate() -> None:
+    reset_database_data()
+
+    candidate_response = client.post(
+        "/api/v1/candidates",
+        json={
+            "full_name": "Pedro Backend",
+            "email": "pedro@example.com",
+            "years_of_experience": 2,
+            "skills": ["python", "fastapi", "sql"],
+        },
+    )
+    candidate_id = candidate_response.json()["id"]
+
+    client.post(
+        "/api/v1/jobs",
+        json={
+            "title": "Python Developer",
+            "company": "Alpha",
+            "minimum_experience": 1,
+            "required_skills": ["python", "fastapi"],
+        },
+    )
+    client.post(
+        "/api/v1/jobs",
+        json={
+            "title": "Front-end Intern",
+            "company": "Beta",
+            "minimum_experience": 0,
+            "required_skills": ["javascript", "react"],
+        },
+    )
+
+    response = client.get(f"/api/v1/match/candidates/{candidate_id}/jobs")
+    body = response.json()
+
+    assert response.status_code == 200
+    assert len(body) == 2
+    assert body[0]["job_title"] == "Python Developer"
+    assert body[0]["score"] >= body[1]["score"]

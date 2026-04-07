@@ -23,6 +23,7 @@ Hoje a implementacao usa SQLite para persistir dados localmente de forma simples
 - Busca de candidatos com filtros por skill e experiencia minima.
 - Criacao e listagem de vagas.
 - Ranking de candidatos por vaga com score de compatibilidade (skills + experiencia).
+- Ranking de vagas por candidato com score de compatibilidade.
 - Retorno detalhado do matching: pontuacao, skills atendidas, skills faltantes e status de experiencia.
 
 ## Como Rodar Localmente
