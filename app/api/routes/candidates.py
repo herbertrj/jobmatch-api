@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, Depends, Query, status
 
+from app.core.auth import require_auth
 from app.db.session import SessionLocal
 from app.models.candidate import Candidate
 from app.schemas.candidate import CandidateCreate, CandidateResponse
@@ -14,7 +15,10 @@ router = APIRouter(prefix="/candidates", tags=["Candidatos"])
     summary="Cadastrar candidato",
     description="Cria um novo candidato com dados basicos e lista de habilidades.",
 )
-def create_candidate(payload: CandidateCreate) -> CandidateResponse:
+def create_candidate(
+    payload: CandidateCreate,
+    _: int = Depends(require_auth),
+) -> CandidateResponse:
     # Persistencia simples em SQLite para manter o projeto leve.
     skills_text = ",".join(payload.skills)
     with SessionLocal() as db:

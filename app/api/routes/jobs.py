@@ -1,5 +1,6 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, status
 
+from app.core.auth import require_auth
 from app.db.session import SessionLocal
 from app.models.job import Job
 from app.schemas.job import JobCreate, JobResponse
@@ -14,7 +15,10 @@ router = APIRouter(prefix="/jobs", tags=["Vagas"])
     summary="Cadastrar vaga",
     description="Cria uma nova vaga com requisitos minimos e habilidades exigidas.",
 )
-def create_job(payload: JobCreate) -> JobResponse:
+def create_job(
+    payload: JobCreate,
+    _: int = Depends(require_auth),
+) -> JobResponse:
     # Persistencia simples em SQLite para manter o projeto leve.
     required_skills_text = ",".join(payload.required_skills)
     with SessionLocal() as db:

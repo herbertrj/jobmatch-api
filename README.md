@@ -12,6 +12,7 @@ Hoje a implementacao usa SQLite para persistir dados localmente de forma simples
 - Pydantic
 - SQLAlchemy
 - SQLite
+- JWT (PyJWT)
 - Pytest
 - Ruff + Black
 
@@ -19,9 +20,11 @@ Hoje a implementacao usa SQLite para persistir dados localmente de forma simples
 
 - Endpoint de health check.
 - Endpoint de versao.
+- Cadastro e login de usuario com token JWT.
 - Criacao e listagem de candidatos.
 - Busca de candidatos com filtros por skill e experiencia minima.
 - Criacao e listagem de vagas.
+- Rotas de criacao protegidas por token.
 - Ranking de candidatos por vaga com score de compatibilidade (skills + experiencia).
 - Ranking de vagas por candidato com score de compatibilidade.
 - Retorno detalhado do matching: pontuacao, skills atendidas, skills faltantes e status de experiencia.

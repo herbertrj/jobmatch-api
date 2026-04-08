@@ -6,3 +6,5 @@ httpx
 ruff
 black
 sqlalchemy
+passlib
+PyJWT
