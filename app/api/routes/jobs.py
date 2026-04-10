@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 
 from app.core.auth import require_auth
 from app.db.session import SessionLocal
@@ -47,9 +47,12 @@ def create_job(
     summary="Listar vagas",
     description="Retorna todas as vagas cadastradas no momento.",
 )
-def list_jobs() -> list[JobResponse]:
+def list_jobs(
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=20, ge=1, le=100),
+) -> list[JobResponse]:
     with SessionLocal() as db:
-        jobs = db.query(Job).all()
+        jobs = db.query(Job).order_by(Job.id).offset(skip).limit(limit).all()
         return [
             JobResponse(
                 id=job.id,

@@ -198,3 +198,89 @@ def test_create_candidate_requires_auth() -> None:
         },
     )
     assert response.status_code == 401
+
+
+def test_list_candidates_with_pagination() -> None:
+    reset_database_data()
+    headers = create_auth_header()
+
+    client.post(
+        "/api/v1/candidates",
+        json={
+            "full_name": "Candidate One",
+            "email": "one@example.com",
+            "years_of_experience": 1,
+            "skills": ["python"],
+        },
+        headers=headers,
+    )
+    client.post(
+        "/api/v1/candidates",
+        json={
+            "full_name": "Candidate Two",
+            "email": "two@example.com",
+            "years_of_experience": 2,
+            "skills": ["fastapi"],
+        },
+        headers=headers,
+    )
+    client.post(
+        "/api/v1/candidates",
+        json={
+            "full_name": "Candidate Three",
+            "email": "three@example.com",
+            "years_of_experience": 3,
+            "skills": ["sql"],
+        },
+        headers=headers,
+    )
+
+    response = client.get("/api/v1/candidates?skip=1&limit=1")
+    body = response.json()
+
+    assert response.status_code == 200
+    assert len(body) == 1
+    assert body[0]["full_name"] == "Candidate Two"
+
+
+def test_list_jobs_with_pagination() -> None:
+    reset_database_data()
+    headers = create_auth_header()
+
+    client.post(
+        "/api/v1/jobs",
+        json={
+            "title": "Job One",
+            "company": "AA",
+            "minimum_experience": 0,
+            "required_skills": ["python"],
+        },
+        headers=headers,
+    )
+    client.post(
+        "/api/v1/jobs",
+        json={
+            "title": "Job Two",
+            "company": "BB",
+            "minimum_experience": 1,
+            "required_skills": ["sql"],
+        },
+        headers=headers,
+    )
+    client.post(
+        "/api/v1/jobs",
+        json={
+            "title": "Job Three",
+            "company": "CC",
+            "minimum_experience": 2,
+            "required_skills": ["fastapi"],
+        },
+        headers=headers,
+    )
+
+    response = client.get("/api/v1/jobs?skip=2&limit=1")
+    body = response.json()
+
+    assert response.status_code == 200
+    assert len(body) == 1
+    assert body[0]["title"] == "Job Three"

@@ -25,6 +25,7 @@ Hoje a implementacao usa SQLite para persistir dados localmente de forma simples
 - Busca de candidatos com filtros por skill e experiencia minima.
 - Criacao e listagem de vagas.
 - Rotas de criacao protegidas por token.
+- Listagens com paginacao via parametros `skip` e `limit`.
 - Ranking de candidatos por vaga com score de compatibilidade (skills + experiencia).
 - Ranking de vagas por candidato com score de compatibilidade.
 - Retorno detalhado do matching: pontuacao, skills atendidas, skills faltantes e status de experiencia.

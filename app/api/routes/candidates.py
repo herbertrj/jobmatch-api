@@ -47,9 +47,12 @@ def create_candidate(
     summary="Listar candidatos",
     description="Retorna todos os candidatos cadastrados ate o momento.",
 )
-def list_candidates() -> list[CandidateResponse]:
+def list_candidates(
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=20, ge=1, le=100),
+) -> list[CandidateResponse]:
     with SessionLocal() as db:
-        candidates = db.query(Candidate).all()
+        candidates = db.query(Candidate).order_by(Candidate.id).offset(skip).limit(limit).all()
         return [
             CandidateResponse(
                 id=candidate.id,
