@@ -21,6 +21,7 @@ Hoje a implementacao usa SQLite para persistir dados localmente de forma simples
 - Endpoint de health check.
 - Endpoint de versao.
 - Cadastro e login de usuario com token JWT.
+- Consulta do usuario logado via token (`/auth/me`).
 - Criacao e listagem de candidatos.
 - Busca de candidatos com filtros por skill e experiencia minima.
 - Criacao e listagem de vagas.

@@ -200,6 +200,24 @@ def test_create_candidate_requires_auth() -> None:
     assert response.status_code == 401
 
 
+def test_auth_me_returns_logged_user() -> None:
+    reset_database_data()
+    headers = create_auth_header()
+
+    response = client.get("/api/v1/auth/me", headers=headers)
+    body = response.json()
+
+    assert response.status_code == 200
+    assert body["full_name"] == "Test User"
+    assert body["email"] == "testuser@example.com"
+
+
+def test_auth_me_requires_token() -> None:
+    reset_database_data()
+    response = client.get("/api/v1/auth/me")
+    assert response.status_code == 401
+
+
 def test_list_candidates_with_pagination() -> None:
     reset_database_data()
     headers = create_auth_header()
