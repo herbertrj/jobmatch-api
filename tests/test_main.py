@@ -44,6 +44,12 @@ def test_health_check() -> None:
     assert response.json() == {"status": "ok"}
 
 
+def test_version_endpoint() -> None:
+    response = client.get("/version")
+    assert response.status_code == 200
+    assert response.json() == {"app": "JobMatch API", "version": "0.1.0"}
+
+
 def test_create_candidate() -> None:
     reset_database_data()
     headers = create_auth_header()
@@ -198,6 +204,51 @@ def test_create_candidate_requires_auth() -> None:
         },
     )
     assert response.status_code == 401
+
+
+def test_create_job_requires_auth() -> None:
+    reset_database_data()
+    response = client.post(
+        "/api/v1/jobs",
+        json={
+            "title": "No Auth Job",
+            "company": "NoAuth Inc",
+            "minimum_experience": 1,
+            "required_skills": ["python"],
+        },
+    )
+    assert response.status_code == 401
+
+
+def test_auth_login_with_invalid_password() -> None:
+    reset_database_data()
+    client.post(
+        "/api/v1/auth/register",
+        json={
+            "full_name": "Login Test",
+            "email": "login@example.com",
+            "password": "123456",
+        },
+    )
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"email": "login@example.com", "password": "wrongpass"},
+    )
+    assert response.status_code == 401
+
+
+def test_auth_register_duplicate_email() -> None:
+    reset_database_data()
+    payload = {
+        "full_name": "Duplicate User",
+        "email": "duplicate@example.com",
+        "password": "123456",
+    }
+    first_response = client.post("/api/v1/auth/register", json=payload)
+    second_response = client.post("/api/v1/auth/register", json=payload)
+
+    assert first_response.status_code == 201
+    assert second_response.status_code == 409
 
 
 def test_auth_me_returns_logged_user() -> None:

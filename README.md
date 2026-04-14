@@ -1,9 +1,11 @@
 # JobMatch API
 
-Projeto pessoal para praticar FastAPI com um tema de recrutamento.
-A ideia e simular um fluxo de selecao completo: cadastrar candidatos, cadastrar vagas e ranquear os candidatos mais aderentes para cada vaga.
-O foco do projeto e mostrar uma API backend organizada, com validacao de dados, regras de compatibilidade e testes automatizados.
-Hoje a implementacao usa SQLite para persistir dados localmente de forma simples.
+Projeto pessoal para praticar FastAPI com um cenario de recrutamento.
+A API simula um fluxo real: cadastrar candidatos, cadastrar vagas e calcular compatibilidade
+entre os dois lados para gerar rankings.
+
+O objetivo aqui e ter um backend organizado e claro, com autenticacao JWT, validacao de dados,
+persistencia local em SQLite e testes automatizados cobrindo os fluxos principais.
 
 ## Tecnologias
 
@@ -16,24 +18,36 @@ Hoje a implementacao usa SQLite para persistir dados localmente de forma simples
 - Pytest
 - Ruff + Black
 
-## O que o projeto faz
+## Funcionalidades implementadas
 
-- Endpoint de health check.
-- Endpoint de versao.
-- Cadastro e login de usuario com token JWT.
-- Consulta do usuario logado via token (`/auth/me`).
-- Criacao e listagem de candidatos.
-- Busca de candidatos com filtros por skill e experiencia minima.
-- Criacao e listagem de vagas.
-- Rotas de criacao protegidas por token.
-- Listagens com paginacao via parametros `skip` e `limit`.
-- Ranking de candidatos por vaga com score de compatibilidade (skills + experiencia).
-- Ranking de vagas por candidato com score de compatibilidade.
-- Retorno detalhado do matching: pontuacao, skills atendidas, skills faltantes e status de experiencia.
+- Health check da aplicacao (`GET /health`).
+- Endpoint de versao (`GET /version`).
+- Registro e login de usuario com token JWT.
+- Consulta do usuario autenticado (`GET /api/v1/auth/me`).
+- Criacao de candidatos (rota protegida por token).
+- Listagem de candidatos com paginacao.
+- Busca de candidatos com filtros (`skill` e `min_experience`).
+- Criacao de vagas (rota protegida por token).
+- Listagem de vagas com paginacao.
+- Ranking de candidatos para uma vaga.
+- Ranking de vagas para um candidato.
+- Retorno detalhado no matching (score, skills atendidas/faltantes e experiencia).
 
-## Como Rodar Localmente
+## Estrutura do projeto
 
-1. Crie e ative um ambiente virtual.
+```text
+app/
+  api/routes/     # endpoints
+  core/           # autenticacao e seguranca
+  db/             # sessao e base SQLAlchemy
+  models/         # modelos de banco
+  schemas/        # contratos de entrada/saida
+tests/
+```
+
+## Como rodar localmente
+
+1. Crie e ative o ambiente virtual.
 2. Instale as dependencias:
 
 ```bash
@@ -51,7 +65,7 @@ uvicorn app.main:app --reload
 - Swagger: `http://127.0.0.1:8000/docs`
 - ReDoc: `http://127.0.0.1:8000/redoc`
 
-## Como Rodar os Testes
+## Como rodar os testes
 
 ```bash
 venv\Scripts\python -m pytest
