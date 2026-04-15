@@ -26,9 +26,11 @@ persistencia local em SQLite e testes automatizados cobrindo os fluxos principai
 - Consulta do usuario autenticado (`GET /api/v1/auth/me`).
 - Criacao de candidatos (rota protegida por token).
 - Listagem de candidatos com paginacao.
+- Consulta, atualizacao e remocao de candidato por id.
 - Busca de candidatos com filtros (`skill` e `min_experience`).
 - Criacao de vagas (rota protegida por token).
 - Listagem de vagas com paginacao.
+- Consulta, atualizacao e remocao de vaga por id.
 - Ranking de candidatos para uma vaga.
 - Ranking de vagas para um candidato.
 - Retorno detalhado no matching (score, skills atendidas/faltantes e experiencia).

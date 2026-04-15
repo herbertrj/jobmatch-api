@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 
 from app.core.auth import require_auth
 from app.db.session import SessionLocal
@@ -6,6 +6,16 @@ from app.models.candidate import Candidate
 from app.schemas.candidate import CandidateCreate, CandidateResponse
 
 router = APIRouter(prefix="/candidates", tags=["Candidatos"])
+
+
+def to_candidate_response(candidate: Candidate) -> CandidateResponse:
+    return CandidateResponse(
+        id=candidate.id,
+        full_name=candidate.full_name,
+        email=candidate.email,
+        years_of_experience=candidate.years_of_experience,
+        skills=[skill for skill in candidate.skills_text.split(",") if skill],
+    )
 
 
 @router.post(
@@ -31,14 +41,7 @@ def create_candidate(
         db.add(candidate)
         db.commit()
         db.refresh(candidate)
-
-        return CandidateResponse(
-            id=candidate.id,
-            full_name=candidate.full_name,
-            email=candidate.email,
-            years_of_experience=candidate.years_of_experience,
-            skills=[skill for skill in candidate.skills_text.split(",") if skill],
-        )
+        return to_candidate_response(candidate)
 
 
 @router.get(
@@ -53,16 +56,7 @@ def list_candidates(
 ) -> list[CandidateResponse]:
     with SessionLocal() as db:
         candidates = db.query(Candidate).order_by(Candidate.id).offset(skip).limit(limit).all()
-        return [
-            CandidateResponse(
-                id=candidate.id,
-                full_name=candidate.full_name,
-                email=candidate.email,
-                years_of_experience=candidate.years_of_experience,
-                skills=[skill for skill in candidate.skills_text.split(",") if skill],
-            )
-            for candidate in candidates
-        ]
+        return [to_candidate_response(candidate) for candidate in candidates]
 
 
 @router.get(
@@ -96,13 +90,76 @@ def search_candidates(
                 continue
 
             results.append(
-                CandidateResponse(
-                    id=candidate.id,
-                    full_name=candidate.full_name,
-                    email=candidate.email,
-                    years_of_experience=candidate.years_of_experience,
-                    skills=[item for item in candidate.skills_text.split(",") if item],
-                )
+                to_candidate_response(candidate)
             )
 
         return results
+
+
+@router.get(
+    "/{candidate_id}",
+    response_model=CandidateResponse,
+    summary="Buscar candidato por id",
+    description="Retorna os dados completos de um candidato especifico.",
+)
+def get_candidate(candidate_id: int) -> CandidateResponse:
+    with SessionLocal() as db:
+        candidate = db.query(Candidate).filter(Candidate.id == candidate_id).first()
+        if candidate is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Candidato nao encontrado.",
+            )
+        return to_candidate_response(candidate)
+
+
+@router.put(
+    "/{candidate_id}",
+    response_model=CandidateResponse,
+    summary="Atualizar candidato",
+    description="Atualiza todos os dados de um candidato existente.",
+)
+def update_candidate(
+    candidate_id: int,
+    payload: CandidateCreate,
+    _: int = Depends(require_auth),
+) -> CandidateResponse:
+    with SessionLocal() as db:
+        candidate = db.query(Candidate).filter(Candidate.id == candidate_id).first()
+        if candidate is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Candidato nao encontrado.",
+            )
+
+        candidate.full_name = payload.full_name
+        candidate.email = payload.email
+        candidate.years_of_experience = payload.years_of_experience
+        candidate.skills_text = ",".join(payload.skills)
+
+        db.commit()
+        db.refresh(candidate)
+        return to_candidate_response(candidate)
+
+
+@router.delete(
+    "/{candidate_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Remover candidato",
+    description="Remove um candidato pelo identificador informado.",
+)
+def delete_candidate(
+    candidate_id: int,
+    _: int = Depends(require_auth),
+) -> Response:
+    with SessionLocal() as db:
+        candidate = db.query(Candidate).filter(Candidate.id == candidate_id).first()
+        if candidate is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Candidato nao encontrado.",
+            )
+
+        db.delete(candidate)
+        db.commit()
+        return Response(status_code=status.HTTP_204_NO_CONTENT)

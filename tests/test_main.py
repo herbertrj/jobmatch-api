@@ -353,3 +353,87 @@ def test_list_jobs_with_pagination() -> None:
     assert response.status_code == 200
     assert len(body) == 1
     assert body[0]["title"] == "Job Three"
+
+
+def test_get_update_and_delete_candidate() -> None:
+    reset_database_data()
+    headers = create_auth_header()
+
+    create_response = client.post(
+        "/api/v1/candidates",
+        json={
+            "full_name": "Gabriel Silva",
+            "email": "gabriel@example.com",
+            "years_of_experience": 2,
+            "skills": ["python", "sql"],
+        },
+        headers=headers,
+    )
+    candidate_id = create_response.json()["id"]
+
+    get_response = client.get(f"/api/v1/candidates/{candidate_id}")
+    assert get_response.status_code == 200
+    assert get_response.json()["full_name"] == "Gabriel Silva"
+
+    update_response = client.put(
+        f"/api/v1/candidates/{candidate_id}",
+        json={
+            "full_name": "Gabriel Silva Junior",
+            "email": "gabriel.jr@example.com",
+            "years_of_experience": 3,
+            "skills": ["python", "fastapi", "sql"],
+        },
+        headers=headers,
+    )
+    updated_body = update_response.json()
+    assert update_response.status_code == 200
+    assert updated_body["full_name"] == "Gabriel Silva Junior"
+    assert updated_body["years_of_experience"] == 3
+
+    delete_response = client.delete(f"/api/v1/candidates/{candidate_id}", headers=headers)
+    assert delete_response.status_code == 204
+
+    after_delete_response = client.get(f"/api/v1/candidates/{candidate_id}")
+    assert after_delete_response.status_code == 404
+
+
+def test_get_update_and_delete_job() -> None:
+    reset_database_data()
+    headers = create_auth_header()
+
+    create_response = client.post(
+        "/api/v1/jobs",
+        json={
+            "title": "Data Analyst",
+            "company": "DataCo",
+            "minimum_experience": 1,
+            "required_skills": ["sql", "python"],
+        },
+        headers=headers,
+    )
+    job_id = create_response.json()["id"]
+
+    get_response = client.get(f"/api/v1/jobs/{job_id}")
+    assert get_response.status_code == 200
+    assert get_response.json()["title"] == "Data Analyst"
+
+    update_response = client.put(
+        f"/api/v1/jobs/{job_id}",
+        json={
+            "title": "Senior Data Analyst",
+            "company": "DataCo",
+            "minimum_experience": 3,
+            "required_skills": ["sql", "python", "powerbi"],
+        },
+        headers=headers,
+    )
+    updated_body = update_response.json()
+    assert update_response.status_code == 200
+    assert updated_body["title"] == "Senior Data Analyst"
+    assert updated_body["minimum_experience"] == 3
+
+    delete_response = client.delete(f"/api/v1/jobs/{job_id}", headers=headers)
+    assert delete_response.status_code == 204
+
+    after_delete_response = client.get(f"/api/v1/jobs/{job_id}")
+    assert after_delete_response.status_code == 404
