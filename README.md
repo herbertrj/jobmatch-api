@@ -16,6 +16,28 @@ Esta API organiza esse fluxo e entrega:
 - score de compatibilidade com explicacao do resultado;
 - endpoints protegidos por autenticacao para operacoes sensiveis.
 
+## O que o sistema faz na pratica
+
+O sistema funciona como um motor simples de triagem tecnica para recrutamento.
+Na operacao do dia a dia, ele permite:
+
+- cadastrar e manter uma base de candidatos com nome, e-mail, experiencia e skills;
+- cadastrar e manter vagas com requisitos minimos de experiencia e habilidades obrigatorias;
+- consultar listas paginadas para navegar pelo banco de dados com desempenho previsivel;
+- filtrar candidatos por habilidade e tempo de experiencia para reduzir o universo inicial;
+- gerar um ranking de compatibilidade de candidatos para uma vaga especifica;
+- gerar um ranking de vagas para um candidato especifico.
+
+Em vez de retornar apenas um numero, a API explica o resultado do matching com:
+
+- habilidades atendidas;
+- habilidades faltantes;
+- validacao de experiencia minima;
+- score final de 0 a 100.
+
+Com isso, o sistema ajuda a priorizar analise de perfis e a justificar tecnicamente por que um candidato
+ou vaga apareceu nas primeiras posicoes do ranking.
+
 ## Stack e ferramentas utilizadas
 
 - `Python 3.11+`
@@ -163,10 +185,3 @@ Atualmente, a suite cobre fluxos principais de:
 - CRUD de candidatos e vagas;
 - paginacao e filtros;
 - ranking de compatibilidade.
-
-## Proximos passos (evolucao)
-
-- adicionar migrations com Alembic;
-- separar configuracoes por ambiente (`.env`);
-- incluir testes de casos limite do algoritmo de score;
-- adicionar CI para rodar testes e lint automaticamente.
